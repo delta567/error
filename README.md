@@ -52,37 +52,28 @@ clear;
 clc;
 
 N = 10^6;
-rng(100); % Set seed
+rng(100);
 
-% Generate random bits
 ip = rand(1, N) > 0.5;
 
-% BPSK modulation
 s = 2*ip - 1;
 
-% AWGN noise
 n = 1/sqrt(2) * (randn(1, N) + 1i*randn(1, N));
 
 Eb_N0_dB = -3:12;
 
 for ii = 1:length(Eb_N0_dB)
-    % Received signal
     y = s + 10^(-Eb_N0_dB(ii)/20) * n;
 
-    % Detection
     ipHat = real(y) > 0;
 
-    % Count errors
     nErr(ii) = sum(ip ~= ipHat);
 end
 
-% BER
 simBer = nErr / N;
 
-% Theoretical BER
 theoryBer = 0.5 * erfc(sqrt(10.^(Eb_N0_dB/10)));
 
-% Plot
 figure;
 semilogy(Eb_N0_dB, theoryBer, 'b-', 'LineWidth', 2);
 hold on;
@@ -109,44 +100,33 @@ clc;
 
 N = 10^6;
 
-% Transmitter
-ip = rand(1, N) > 0.5; % random bits
-s = 2*ip - 1;          % BPSK
+ip = rand(1, N) > 0.5;
+s = 2*ip - 1;
 
 Eb_N0_dB = -3:35;
 
 for ii = 1:length(Eb_N0_dB)
 
-    % Rayleigh channel
     h = 1/sqrt(2) * (randn(1, N) + 1i*randn(1, N));
 
-    % AWGN noise
     n = 1/sqrt(2) * (randn(1, N) + 1i*randn(1, N));
 
-    % Received signal
     y = h .* s + 10^(-Eb_N0_dB(ii)/20) * n;
 
-    % Equalization
     yHat = y ./ h;
 
-    % Detection
     ipHat = real(yHat) > 0;
 
-    % Errors
     nErr(ii) = sum(ip ~= ipHat);
 end
 
-% Simulated BER
 simBer = nErr / N;
 
-% Theoretical BER (AWGN)
 theoryBerAWGN = 0.5 * erfc(sqrt(10.^(Eb_N0_dB/10)));
 
-% Theoretical BER (Rayleigh)
 EbN0Lin = 10.^(Eb_N0_dB/10);
 theoryBerRayleigh = 0.5 * (1 - sqrt(EbN0Lin ./ (EbN0Lin + 1)));
 
-% Plot
 figure;
 semilogy(Eb_N0_dB, theoryBerAWGN, 'c-', 'LineWidth', 2);
 hold on;
