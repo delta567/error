@@ -161,3 +161,62 @@ xlabel('Eb/No (dB)');
 ylabel('Bit Error Rate');
 title('BER for BPSK in Rayleigh Channel');
 
+
+
+
+
+// TCP IP
+
+// client_file.py
+
+import socket
+
+HOST = '127.0.0.1'   # Server IP (same PC = localhost)
+PORT = 5001
+
+client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+client.connect((HOST, PORT))
+
+file = open("send_file.txt", "rb")
+
+while True:
+    data = file.read(1024)
+    if not data:
+        break
+    client.sendall(data)
+
+file.close()
+client.close()
+
+print("File sent successfully!")
+
+
+// server_file.py
+
+import socket
+
+HOST = '0.0.0.0'   # Listen on all interfaces
+PORT = 5001
+
+server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+server.bind((HOST, PORT))
+server.listen(1)
+
+print("Server is waiting for connection...")
+
+conn, addr = server.accept()
+print(f"Connected by {addr}")
+
+file = open("received_file.txt", "wb")
+
+while True:
+    data = conn.recv(1024)
+    if not data:
+        break
+    file.write(data)
+
+file.close()
+conn.close()
+server.close()
+
+print("File received successfully!")
